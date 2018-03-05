@@ -7,24 +7,34 @@ import string
 import sys
 import os
 import gc
+import sys
 
 
 gc.enable()
 
-filepath = os.path.dirname(os.path.realpath(sys.argv[0]))
-print 'Filepath is '+filepath
-filepath += '/'
-tot_Iterations=10 # upto which order FSCNMF should run
+tot_Iterations = 10 # upto which order FSCNMF should run
+
+
+if len(sys.argv)!=5:
+	print 'Insufficient arguments \n exiting program..........\n'
+	sys.exit()
+
+adjFile = sys.argv[1]   #'adjacencyList.csv'   # assuming comma as delimiter. Each node's info  on new line
+contFile = sys.argv[2]     #'content.csv'   # assuming comma as delimiter. Each node's info  on new line
+pidFile = sys.argv[3]         #'paperId.csv'   # each elemet on new line
+num_communities = int(sys.argv[4])         #'labels.csv'   # each elemet on new line
+
+
+print '###num comm	', 10*num_communities
+#~ true_labels = pd.read_csv(labelsFile, header=None)
+#~ true_labels = true_labels[0].tolist()
+
+#~ num_communities = len(set(true_labels))    #unique labels give number of community
+k=10*num_communities #dimension of the final embedding space
 
 
 
-adjFile = 'adjacencyList.csv'   # assuming comma as delimiter. Each node's info  on new line
-contFile='content.csv'   # assuming comma as delimiter. Each node's info  on new line
-pidFile='paperId.csv'   # each elemet on new line
-labelsFile='labels.csv'   # each elemet on new line
-
-
-df_paperId = pd.read_csv(filepath+pidFile, header=None)
+df_paperId = pd.read_csv(pidFile, header=None)
 print df_paperId.shape
 
 #paperId to index dictionary
@@ -42,7 +52,7 @@ print 'Processing adjaceny list started'
 rowList=[]
 columnList=[]
 valueList=[]
-with open(filepath+adjFile) as infile:
+with open(adjFile) as infile:
     data = infile.read().split('\n')
     if len(data[-1])==0:
         data.pop()
@@ -72,18 +82,9 @@ print '*********************** Processing adjaceny list '
     
 print '**********************  Processing content started'
     
-C = pd.read_csv(filepath+contFile, header=None)   #prefered to be in tf-idf form
+C = pd.read_csv(contFile, header=None)   #prefered to be in tf-idf form
 C = C.as_matrix(columns=None)
 
-
-
-true_labels = pd.read_csv(filepath+labelsFile, header=None)
-true_labels = true_labels[0].tolist()
-
-num_communities = len(set(true_labels))    #unique labels give number of community
-
-
-k=10*num_communities #dimension of the final embedding space
 
 gc.collect()
 
@@ -218,7 +219,7 @@ for num_iter in range(tot_Iterations): #To rtun nth order FSCNMF, give n in the 
             break
         
     
-    optiFile = open(filepath+'FSCNMF++_'+str(num_iter+1)+'_OptiValues.csv', 'w')
+    optiFile = open('FSCNMF++_'+str(num_iter+1)+'_OptiValues.csv', 'w')
 
     for item in opti1_values:
         optiFile.write(str(item)+'\t')
@@ -240,7 +241,7 @@ for num_iter in range(tot_Iterations): #To rtun nth order FSCNMF, give n in the 
     
     
     
-    np.savetxt(filepath+'FSCNMF++_order'+str(num_iter+1)+'_rep.txt', B1)
+    np.savetxt('FSCNMF++_order'+str(num_iter+1)+'_rep.txt', B1)
     
     gc.collect()
     
