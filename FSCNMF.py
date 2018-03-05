@@ -24,8 +24,6 @@ contFile = sys.argv[2]     #'content.csv'   # assuming comma as delimiter. Each 
 pidFile = sys.argv[3]         #'paperId.csv'   # each elemet on new line
 num_communities = int(sys.argv[4])         #'labels.csv'   # each elemet on new line
 
-
-print '###num comm	', 10*num_communities
 #~ true_labels = pd.read_csv(labelsFile, header=None)
 #~ true_labels = true_labels[0].tolist()
 
